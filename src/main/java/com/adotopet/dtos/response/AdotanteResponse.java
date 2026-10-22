@@ -11,7 +11,7 @@ import java.util.UUID;
 @Setter
 public class AdotanteResponse {
     private UUID id;
-    private String name;
+    private String nome;
     private String cpf;
     private LocalDate dataNascimento;
     private AdotanteEnum adotanteEnum;

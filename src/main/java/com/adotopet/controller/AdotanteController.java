@@ -1,0 +1,56 @@
+package com.adotopet.controller;
+
+import com.adotopet.dtos.request.AdotanteParcialRequest;
+import com.adotopet.dtos.request.AdotanteRequest;
+import com.adotopet.dtos.response.AdotanteResponse;
+import com.adotopet.service.AdotanteService;
+import jakarta.validation.Valid;
+import org.aspectj.lang.annotation.DeclareError;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/adotante")
+public class AdotanteController {
+    private final AdotanteService adotanteService;
+
+    public AdotanteController(AdotanteService adotanteService) {
+        this.adotanteService = adotanteService;
+    }
+
+    @PostMapping("/registrar")
+    public AdotanteResponse registrar(@Valid @RequestBody AdotanteRequest adotanteRequest) {
+        return adotanteService.registrarAdotante(adotanteRequest);
+    }
+
+    @GetMapping("/listar-todos")
+    public List<AdotanteResponse> listarTodos() {
+        return adotanteService.listarTodos();
+    }
+
+    @GetMapping("listar-nome/{nome}")
+    public List<AdotanteResponse> listarNome(@PathVariable String nome) {
+        return adotanteService.listarNome(nome);
+    }
+
+    @GetMapping("listar-cpf/{cpf}")
+    public AdotanteResponse listarCpf(@PathVariable String cpf) {
+        return adotanteService.listarCpf(cpf);
+    }
+
+    @PutMapping("/atualizar/{cpf}")
+    public AdotanteResponse atualizarCompleto(@RequestBody @Valid AdotanteRequest adotanteRequest, @PathVariable String cpf) {
+        return adotanteService.atualizarAdotante(adotanteRequest, cpf);
+    }
+
+    @PatchMapping("/atualizar/{cpf}")
+    public AdotanteResponse atualizarParcial(@RequestBody @Valid AdotanteParcialRequest adotanteParcialRequest, @PathVariable String cpf) {
+        return adotanteService.atualizarParcial(adotanteParcialRequest, cpf);
+    }
+
+    @DeleteMapping("/deletar/{cpf}")
+    public void deletarAdotante(@PathVariable String cpf) {
+        adotanteService.deletarAdotante(cpf);
+    }
+}

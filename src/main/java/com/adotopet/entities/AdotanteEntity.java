@@ -22,7 +22,7 @@ public class AdotanteEntity {
     private UUID id;
 
     @Column(name = "nome", nullable = false)
-    private String name;
+    private String nome;
 
     @Column(nullable = false, unique = true, length = 11)
     private String cpf;
