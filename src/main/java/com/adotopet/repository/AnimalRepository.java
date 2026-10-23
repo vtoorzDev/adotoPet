@@ -10,5 +10,6 @@ import java.util.UUID;
 @Repository
 public interface AnimalRepository extends JpaRepository<AnimalEntity, UUID> {
     boolean existsByNome(String nome);
+    boolean existsById(UUID id);
     List<AnimalEntity> findByNome(String nome);
 }

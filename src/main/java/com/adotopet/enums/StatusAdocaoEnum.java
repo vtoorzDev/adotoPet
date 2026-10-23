@@ -1,8 +1,7 @@
 package com.adotopet.enums;
 
-public enum StatusSolicitacaoEnum {
+public enum StatusAdocaoEnum {
     PENDENTE,
     APROVADA,
-    REJEITADA,
     CANCELADA
 }
