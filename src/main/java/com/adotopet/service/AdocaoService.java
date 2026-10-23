@@ -5,6 +5,7 @@ import com.adotopet.dtos.response.AdocaoResponse;
 import com.adotopet.entities.AdocaoEntity;
 import com.adotopet.entities.AdotanteEntity;
 import com.adotopet.entities.AnimalEntity;
+import com.adotopet.enums.AdotanteEnum;
 import com.adotopet.enums.StatusAdocaoEnum;
 import com.adotopet.enums.StatusAnimalEnum;
 import com.adotopet.exceptions.AdocaoException;
@@ -14,6 +15,7 @@ import com.adotopet.repository.AdocaoRepository;
 import com.adotopet.repository.AdotanteRepository;
 import com.adotopet.repository.AnimalRepository;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.BeanIsAbstractException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -79,6 +81,7 @@ public class AdocaoService {
         return listaAdocao.stream().map(this::transformResponse).toList();
     }
 
+    @Transactional
     public AdocaoResponse atualizarAdocao( UUID adocaoId, UUID adotanteId, UUID animalId) {
         AdocaoEntity adocaoEncontrada = adocaoRepository.findById(adocaoId)
                 .orElseThrow(() -> new AdocaoException("Adoção não encontrada"));
@@ -103,6 +106,34 @@ public class AdocaoService {
                 .orElseThrow(() -> new AdocaoException("Adoção não encontrada"));
 
         adocaoRepository.delete(adocaoEncontrada);
+    }
+
+    @Transactional
+    public AdocaoResponse finalizarAdocao(UUID adocaoId) {
+        AdocaoEntity adocaoEncontrada = adocaoRepository.findById(adocaoId)
+                .orElseThrow(() -> new AdocaoException("Adoção não encontrada"));
+
+        if (adocaoEncontrada.getStatusAdocaoEnum() != StatusAdocaoEnum.PENDENTE) {
+            throw new AdocaoException("Só é possível finalizar adoções pendentes");
+        }
+
+        AnimalEntity animalEncontrado = adocaoEncontrada.getAnimal();
+        AdotanteEntity adotanteEncontrado = adocaoEncontrada.getAdotante();
+
+        if (adotanteEncontrado.getAdotanteEnum() == AdotanteEnum.Inativo) {
+            throw new AdotanteException("Adotante está inativo no sistema");
+        }
+
+        if (animalEncontrado.getStatusAnimalEnum() == StatusAnimalEnum.ADOTADO) {
+            throw new AnimalException("Animal já adotado");
+        }
+
+        adocaoEncontrada.setStatusAdocaoEnum(StatusAdocaoEnum.APROVADA);
+        animalEncontrado.setStatusAnimalEnum(StatusAnimalEnum.ADOTADO);
+
+        AdocaoEntity adocaoSalva = adocaoRepository.save(adocaoEncontrada);
+
+        return transformResponse(adocaoSalva);
     }
 
 }
