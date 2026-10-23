@@ -35,7 +35,7 @@ public class AdocaoController {
     }
 
     @DeleteMapping("/deletar/{id}")
-    public AdocaoResponse deletarAdocao(@PathVariable UUID adocaoId) {
-        return adocaoService.deletarAdocao(adocaoId);
+    public void deletarAdocao(@PathVariable UUID adocaoId) {
+        adocaoService.deletarAdocao(adocaoId);
     }
 }
