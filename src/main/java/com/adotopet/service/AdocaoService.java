@@ -136,4 +136,26 @@ public class AdocaoService {
         return transformResponse(adocaoSalva);
     }
 
+    @Transactional
+    public AdocaoResponse cancelarAdocao (UUID adocaoId) {
+        AdocaoEntity adocaoEncontrada = adocaoRepository.findById(adocaoId)
+                .orElseThrow(() -> new AdocaoException("Adoção não encontrada"));
+
+        if (adocaoEncontrada.getStatusAdocaoEnum() != StatusAdocaoEnum.PENDENTE) {
+            throw new AdocaoException("A adoção precisa ter o status de pendente para cancelar a adoção");
+        }
+
+        AnimalEntity animalEncontrado = adocaoEncontrada.getAnimal();
+
+        if (animalEncontrado.getStatusAnimalEnum() != StatusAnimalEnum.RESERVADO) {
+            throw new AnimalException("O animal precisa ter o status de reservado para poder cancelar a adoção");
+       }
+
+        adocaoEncontrada.setStatusAdocaoEnum(StatusAdocaoEnum.CANCELADA);
+        animalEncontrado.setStatusAnimalEnum(StatusAnimalEnum.DISPONIVEL);
+
+        AdocaoEntity adocaoCancelada = adocaoRepository.save(adocaoEncontrada);
+        return transformResponse(adocaoCancelada);
+    }
+
 }
