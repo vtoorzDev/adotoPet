@@ -6,6 +6,7 @@ import com.adotopet.entities.AdocaoEntity;
 import com.adotopet.entities.AdotanteEntity;
 import com.adotopet.entities.AnimalEntity;
 import com.adotopet.enums.StatusAdocaoEnum;
+import com.adotopet.enums.StatusAnimalEnum;
 import com.adotopet.exceptions.AdocaoException;
 import com.adotopet.exceptions.AdotanteException;
 import com.adotopet.exceptions.AnimalException;
@@ -14,6 +15,7 @@ import com.adotopet.repository.AdotanteRepository;
 import com.adotopet.repository.AnimalRepository;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -41,6 +43,8 @@ public class AdocaoService {
         return adocaoResponse;
     }
 
+
+    @Transactional
     public AdocaoResponse registrarAdocao(UUID adotanteId, UUID animalId) {
         AdotanteEntity adotanteEcontrado = adotanteRepository.findById(adotanteId)
                 .orElseThrow(() -> new AdotanteException("Adotante não registrado"));
@@ -48,11 +52,16 @@ public class AdocaoService {
         AnimalEntity animalEncontrado = animalRepository.findById(animalId)
                 .orElseThrow(() -> new AnimalException("Animal não registrado"));
 
+        if (animalEncontrado.getStatusAnimalEnum() == (StatusAnimalEnum.ADOTADO) || (animalEncontrado.getStatusAnimalEnum() == (StatusAnimalEnum.RESERVADO))) {
+            throw new AnimalException("Não foi possivel registrar a adoção, o animal já está adotado ou reservado");
+        }
+
         AdocaoEntity adocao = new AdocaoEntity();
 
         adocao.setAdotante(adotanteEcontrado);
         adocao.setAnimal(animalEncontrado);
         adocao.setStatusAdocaoEnum(StatusAdocaoEnum.PENDENTE);
+        animalEncontrado.setStatusAnimalEnum(StatusAnimalEnum.RESERVADO);
 
         AdocaoEntity adocaoRegistrada = adocaoRepository.save(adocao);
 
