@@ -38,4 +38,9 @@ public class AdocaoController {
     public void deletarAdocao(@PathVariable UUID adocaoId) {
         adocaoService.deletarAdocao(adocaoId);
     }
+
+    @PatchMapping("/finalizar/{id}/")
+    public AdocaoResponse finalizarAdocao(@PathVariable UUID adocaoId){
+        return adocaoService.finalizarAdocao(adocaoId);
+    }
 }
