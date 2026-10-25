@@ -1,6 +1,6 @@
+
 package com.adotopet.service;
 
-import com.adotopet.dtos.request.AdocaoRequest;
 import com.adotopet.dtos.response.AdocaoResponse;
 import com.adotopet.entities.AdocaoEntity;
 import com.adotopet.entities.AdotanteEntity;
@@ -14,12 +14,11 @@ import com.adotopet.exceptions.AnimalException;
 import com.adotopet.repository.AdocaoRepository;
 import com.adotopet.repository.AdotanteRepository;
 import com.adotopet.repository.AnimalRepository;
-import jakarta.validation.Valid;
-import org.springframework.beans.factory.BeanIsAbstractException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -45,7 +44,6 @@ public class AdocaoService {
         return adocaoResponse;
     }
 
-
     @Transactional
     public AdocaoResponse registrarAdocao(UUID adotanteId, UUID animalId) {
         AdotanteEntity adotanteEcontrado = adotanteRepository.findById(adotanteId)
@@ -54,7 +52,7 @@ public class AdocaoService {
         AnimalEntity animalEncontrado = animalRepository.findById(animalId)
                 .orElseThrow(() -> new AnimalException("Animal não registrado"));
 
-        if (animalEncontrado.getStatusAnimalEnum() == (StatusAnimalEnum.ADOTADO) || (animalEncontrado.getStatusAnimalEnum() == (StatusAnimalEnum.RESERVADO))) {
+        if (animalEncontrado.getStatusAnimalEnum() == StatusAnimalEnum.ADOTADO || animalEncontrado.getStatusAnimalEnum() == StatusAnimalEnum.RESERVADO) {
             throw new AnimalException("Não foi possivel registrar a adoção, o animal já está adotado ou reservado");
         }
 
@@ -71,14 +69,14 @@ public class AdocaoService {
 
     }
 
-    public List<AdocaoResponse> listarTodasAdocao() {
-        List<AdocaoEntity> listaAdocao = adocaoRepository.findAll();
+    public Page<AdocaoResponse> listarTodasAdocao(Pageable pageable) {
+        Page<AdocaoEntity> paginaAdocao = adocaoRepository.findAll(pageable);
 
-        if (listaAdocao.isEmpty()) {
+        if (paginaAdocao.isEmpty()) {
             throw new AdocaoException("Nenhuma adoção registrada");
         }
 
-        return listaAdocao.stream().map(this::transformResponse).toList();
+        return paginaAdocao.map(this::transformResponse);
     }
 
     @Transactional
@@ -149,7 +147,7 @@ public class AdocaoService {
 
         if (animalEncontrado.getStatusAnimalEnum() != StatusAnimalEnum.RESERVADO) {
             throw new AnimalException("O animal precisa ter o status de reservado para poder cancelar a adoção");
-       }
+        }
 
         adocaoEncontrada.setStatusAdocaoEnum(StatusAdocaoEnum.CANCELADA);
         animalEncontrado.setStatusAnimalEnum(StatusAnimalEnum.DISPONIVEL);
