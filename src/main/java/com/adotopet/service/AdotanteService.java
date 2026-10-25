@@ -63,14 +63,14 @@ public class AdotanteService {
         return adotanteEntity.map(this::transformResponse);
     }
 
-    public List<AdotanteResponse> listarNome(String nome) {
-        List<AdotanteEntity> adotanteEntity = adotanteRepository.findByNome(nome);
+    public Page<AdotanteResponse> listarNome(String nome, Pageable pageable) {
+        Page<AdotanteEntity> adotanteEntity = adotanteRepository.findByNomeContainingIgnoreCase(nome, pageable);
 
         if (adotanteEntity.isEmpty()) {
             throw new AdotanteException("Nenhum adotante com esse nome encontrado no sistema");
         }
 
-        return adotanteEntity.stream().map(this::transformResponse).toList();
+        return adotanteEntity.map(this::transformResponse);
     }
 
     public AdotanteResponse listarCpf(String cpf) {
