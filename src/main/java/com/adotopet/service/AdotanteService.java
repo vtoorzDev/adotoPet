@@ -11,8 +11,8 @@ import com.adotopet.repository.AdotanteRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 
 @Service
 public class AdotanteService {
@@ -33,7 +33,7 @@ public class AdotanteService {
 
         return adotanteResponse;
     }
-
+    @Transactional
     public AdotanteResponse registrarAdotante (AdotanteRequest adotanteRequest) {
         boolean adotanteEncontrado = adotanteRepository.existsByCpf(adotanteRequest.getCpf());
 
@@ -80,6 +80,7 @@ public class AdotanteService {
        return transformResponse(adotanteEntity);
         }
 
+        @Transactional
     public AdotanteResponse atualizarAdotante(AdotanteRequest adotanteRequest, String cpf) {
         AdotanteEntity adotanteEntity = adotanteRepository.findByCpf(cpf)
                 .orElseThrow(() -> new AdotanteException("Nenhum adotante Encontrado com esse cpf"));
@@ -92,11 +93,10 @@ public class AdotanteService {
         adotanteEntity.setCpf(adotanteRequest.getCpf());
         adotanteEntity.setDataNascimento(adotanteRequest.getDataNascimento());
 
-        AdotanteEntity adotanteAtualizado = adotanteRepository.save(adotanteEntity);
-
-        return transformResponse(adotanteAtualizado);
+        return transformResponse(adotanteEntity);
     }
 
+    @Transactional
     public AdotanteResponse atualizarParcial(AdotanteParcialRequest adotanteParcialRequest, String cpf) {
         AdotanteEntity adotanteEntity = adotanteRepository.findByCpf(cpf)
                 .orElseThrow(() -> new AdotanteException("Nenhum adotante encontrado com esse cpf"));
@@ -117,11 +117,10 @@ public class AdotanteService {
             adotanteEntity.setDataNascimento(adotanteParcialRequest.getDataNascimento());
         }
 
-        AdotanteEntity adotanteAtualizado = adotanteRepository.save(adotanteEntity);
-
-        return transformResponse(adotanteAtualizado);
+        return transformResponse(adotanteEntity);
     }
 
+    @Transactional
     public void deletarAdotante(String cpf) {
         AdotanteEntity adotanteEntity = adotanteRepository.findByCpf(cpf)
                 .orElseThrow(() -> new AdotanteException("Nenhum adotante encontrado com esse cpf"));
