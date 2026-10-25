@@ -33,9 +33,9 @@ public class AnimalController {
         return animalService.listarTodosAnimais(pageable);
     }
 
-    @GetMapping("/listar-animais")
-    public List<AnimalResponse> listarAnimaisNome(@RequestParam String nome) {
-        return animalService.buscarAnimal(nome);
+    @GetMapping("/listar-animais/{nome}")
+    public Page<AnimalResponse> listarAnimaisNome(@PathVariable String nome, @PageableDefault(size = 10) Pageable pageable) {
+        return animalService.buscarAnimal(nome, pageable);
     }
 
     @PatchMapping("/atualizar-animal/{id}")
