@@ -6,6 +6,9 @@ import com.adotopet.dtos.response.AdotanteResponse;
 import com.adotopet.service.AdotanteService;
 import jakarta.validation.Valid;
 import org.aspectj.lang.annotation.DeclareError;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,8 +28,8 @@ public class AdotanteController {
     }
 
     @GetMapping("/listar-todos")
-    public List<AdotanteResponse> listarTodos() {
-        return adotanteService.listarTodos();
+    public Page<AdotanteResponse> listarTodos(@PageableDefault(size = 10)Pageable pageable) {
+        return adotanteService.listarTodos(pageable);
     }
 
     @GetMapping("listar-nome/{nome}")
