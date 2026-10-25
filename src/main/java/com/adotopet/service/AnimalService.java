@@ -71,14 +71,14 @@ public class AnimalService {
         return animalEntities.map(this::transformResponse);
         }
 
-    public List<AnimalResponse> buscarAnimal(String nome) {
-        List<AnimalEntity> animalEcontrado = animalRepository.findByNome(nome);
+    public Page<AnimalResponse> buscarAnimal(String nome, Pageable pageable) {
+        Page<AnimalEntity> animalEcontrado = animalRepository.findByNome(nome, pageable);
 
         if (animalEcontrado.isEmpty()) {
             throw new AnimalException("Nenhum animal encontrado com esse nome");
         }
 
-        return animalEcontrado.stream().map(this::transformResponse).toList();
+        return animalEcontrado.map(this::transformResponse);
     }
 
 
