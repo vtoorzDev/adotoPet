@@ -64,7 +64,7 @@ public class AdotanteService {
     }
 
     public Page<AdotanteResponse> listarNome(String nome, Pageable pageable) {
-      Page<AdotanteEntity> adotanteEntity = adotanteRepository.findByNome(nome, pageable);
+        Page<AdotanteEntity> adotanteEntity = adotanteRepository.findByNomeContainingIgnoreCase(nome, pageable);
 
         if (adotanteEntity.isEmpty()) {
             throw new AdotanteException("Nenhum adotante com esse nome encontrado no sistema");
