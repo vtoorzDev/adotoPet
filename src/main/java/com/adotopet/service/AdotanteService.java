@@ -8,6 +8,8 @@ import com.adotopet.enums.AdotanteEnum;
 import com.adotopet.exceptions.AdotanteException;
 import com.adotopet.exceptions.AnimalException;
 import com.adotopet.repository.AdotanteRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -51,14 +53,14 @@ public class AdotanteService {
         return transformResponse(adotante);
     }
 
-    public List<AdotanteResponse> listarTodos() {
-        List<AdotanteEntity> adotanteEntity= adotanteRepository.findAll();
+    public Page<AdotanteResponse> listarTodos(Pageable pageable) {
+        Page<AdotanteEntity> adotanteEntity= adotanteRepository.findAll(pageable);
 
         if (adotanteEntity.isEmpty()) {
             throw new AdotanteException("Nenhum adotante cadastrado no sistema");
         }
 
-        return adotanteEntity.stream().map(this::transformResponse).toList();
+        return adotanteEntity.map(this::transformResponse);
     }
 
     public List<AdotanteResponse> listarNome(String nome) {

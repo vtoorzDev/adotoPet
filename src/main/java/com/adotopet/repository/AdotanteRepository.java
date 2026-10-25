@@ -13,4 +13,5 @@ public interface AdotanteRepository extends JpaRepository<AdotanteEntity, UUID> 
     boolean existsByCpf(String cpf);
     List<AdotanteEntity> findByNome(String nome);
     Optional<AdotanteEntity> findByCpf(String cpf);
+
 }
