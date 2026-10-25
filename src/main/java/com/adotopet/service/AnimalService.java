@@ -10,9 +10,9 @@ import com.adotopet.repository.AnimalRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -38,6 +38,7 @@ public class AnimalService {
         return animalResponse;
     }
 
+    @Transactional
     public AnimalResponse registrarAnimal(AnimalRequest animalRequest) {
         boolean animalEncontrado = animalRepository.existsByNome(animalRequest.getNome());
 
@@ -82,6 +83,7 @@ public class AnimalService {
     }
 
 
+    @Transactional
     public AnimalResponse atualizarAnimalParcial(AnimalPatchRequest animalPatchRequest, UUID id) {
         AnimalEntity animalEncontrado = animalRepository.findById(id)
                 .orElseThrow(() -> new AnimalException("Animal não encontrado no sistema"));
@@ -114,11 +116,10 @@ public class AnimalService {
             animalEncontrado.setPorteEnum(animalPatchRequest.getPorteEnum());
         }
 
-        AnimalEntity animalAtualizado = animalRepository.save(animalEncontrado);
-
-        return transformResponse(animalAtualizado);
+        return transformResponse(animalEncontrado);
     }
 
+    @Transactional
     public AnimalResponse atualizarAnimalCompleto(AnimalRequest animalRequest, UUID id) {
         AnimalEntity animalEncontrado = animalRepository.findById(id)
                 .orElseThrow(() -> new AnimalException("Animal não encontrado no sistema"));
@@ -131,11 +132,10 @@ public class AnimalService {
         animalEncontrado.setEspecieEnum(animalRequest.getEspecieEnum());
         animalEncontrado.setPorteEnum(animalRequest.getPorteEnum());
 
-        AnimalEntity animalAtualizado = animalRepository.save(animalEncontrado);
-
-        return transformResponse(animalAtualizado);
+        return transformResponse(animalEncontrado);
     }
 
+    @Transactional
     public void deletarAnimal(UUID id) {
         AnimalEntity animalEncontrado = animalRepository.findById(id)
                 .orElseThrow(() -> new AnimalException("Animal não encontrado"));
