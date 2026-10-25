@@ -7,6 +7,8 @@ import com.adotopet.entities.AnimalEntity;
 import com.adotopet.enums.StatusAnimalEnum;
 import com.adotopet.exceptions.AnimalException;
 import com.adotopet.repository.AnimalRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -59,14 +61,14 @@ public class AnimalService {
         return transformResponse(animalSalvo);
     }
 
-    public List<AnimalResponse> listarTodosAnimais() {
-        List<AnimalEntity> animalEntities = animalRepository.findAll();
+    public Page<AnimalResponse> listarTodosAnimais(Pageable pageable) {
+        Page<AnimalEntity> animalEntities = animalRepository.findAll(pageable);
 
         if (animalEntities.isEmpty()) {
             throw new AnimalException("Não tem nenhum animal cadastrado no sistema");
         }
 
-        return animalEntities.stream().map(this::transformResponse).toList();
+        return animalEntities.map(this::transformResponse);
         }
 
     public List<AnimalResponse> buscarAnimal(String nome) {
