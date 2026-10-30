@@ -5,11 +5,13 @@ import com.adotopet.dtos.request.AdotanteRequest;
 import com.adotopet.dtos.response.AdotanteResponse;
 import com.adotopet.service.AdotanteService;
 import jakarta.validation.Valid;
+import org.aspectj.lang.annotation.DeclareError;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 
 @RestController
 @RequestMapping("/adotante")
@@ -31,7 +33,7 @@ public class AdotanteController {
     }
 
     @GetMapping("listar-nome/{nome}")
-    public Page<AdotanteResponse> listarNome(@PathVariable String nome,  @PageableDefault(size = 10) Pageable pageable) {
+    public Page<AdotanteResponse> listarNome(@PageableDefault(size = 10) Pageable pageable, @PathVariable String nome) {
         return adotanteService.listarNome(nome, pageable);
     }
 
