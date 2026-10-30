@@ -33,8 +33,8 @@ public class AdotanteController {
     }
 
     @GetMapping("listar-nome/{nome}")
-    public List<AdotanteResponse> listarNome(@PathVariable String nome) {
-        return adotanteService.listarNome(nome);
+    public Page<AdotanteResponse> listarNome(@PageableDefault(size = 10) Pageable pageable, @PathVariable String nome) {
+        return adotanteService.listarNome(nome, pageable);
     }
 
     @GetMapping("listar-cpf/{cpf}")

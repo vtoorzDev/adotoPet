@@ -13,8 +13,6 @@ import java.util.UUID;
 public interface AdotanteRepository extends JpaRepository<AdotanteEntity, UUID> {
 
     boolean existsByCpf(String cpf);
-
     Optional<AdotanteEntity> findByCpf(String cpf);
-
     Page<AdotanteEntity> findByNomeContainingIgnoreCase(String nome, Pageable pageable);
 }
