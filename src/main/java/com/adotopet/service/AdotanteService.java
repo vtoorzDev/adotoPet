@@ -10,7 +10,6 @@ import com.adotopet.exceptions.AnimalException;
 import com.adotopet.repository.AdotanteRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,11 +17,9 @@ import java.util.List;
 @Service
 public class AdotanteService {
     private final AdotanteRepository adotanteRepository;
-    private final PasswordEncoder passwordEncoder;
 
-    public AdotanteService(AdotanteRepository adotanteRepository, PasswordEncoder passwordEncoder) {
+    public AdotanteService(AdotanteRepository adotanteRepository) {
         this.adotanteRepository = adotanteRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
     private AdotanteResponse transformResponse(AdotanteEntity adotanteEntity) {
@@ -39,14 +36,9 @@ public class AdotanteService {
 
     public AdotanteResponse registrarAdotante (AdotanteRequest adotanteRequest) {
         boolean adotanteEncontrado = adotanteRepository.existsByCpf(adotanteRequest.getCpf());
-        boolean emailEncontrado = adotanteRepository.existsByEmail(adotanteRequest.getEmail());
 
         if (adotanteEncontrado) {
-            throw new AdotanteException("Adotante já cadastrado no sistema");
-        }
-
-        if (emailEncontrado) {
-            throw new AdotanteException("Adotante já cadastrado no sistema");
+            throw new AnimalException("Adotante já cadastrado no sistema");
         }
 
         AdotanteEntity adotanteRegistrado = new AdotanteEntity();
@@ -55,8 +47,6 @@ public class AdotanteService {
         adotanteRegistrado.setCpf(adotanteRequest.getCpf());
         adotanteRegistrado.setDataNascimento(adotanteRequest.getDataNascimento());
         adotanteRegistrado.setAdotanteEnum(AdotanteEnum.Ativo);
-        adotanteRegistrado.setEmail(adotanteRequest.getEmail());
-        adotanteRegistrado.setSenha(passwordEncoder.encode(adotanteRequest.getSenha()));
 
         AdotanteEntity adotante = adotanteRepository.save(adotanteRegistrado);
 
@@ -93,6 +83,7 @@ public class AdotanteService {
     public AdotanteResponse atualizarAdotante(AdotanteRequest adotanteRequest, String cpf) {
         AdotanteEntity adotanteEntity = adotanteRepository.findByCpf(cpf)
                 .orElseThrow(() -> new AdotanteException("Nenhum adotante Encontrado com esse cpf"));
+
         if (adotanteEntity.getAdotanteEnum().equals(AdotanteEnum.Inativo)) {
             throw new AdotanteException("Não foi possivel atualizar, o usuário está inativo");
         }

@@ -30,12 +30,6 @@ public class AdotanteEntity {
     @Column(name = "data_nascimento", nullable = false)
     private LocalDate dataNascimento;
 
-    @Column(name = "email", unique = true)
-    private String email;
-
-    @Column(name = "senha")
-    private String senha;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "adotante_status", nullable = false)
     private AdotanteEnum adotanteEnum;
