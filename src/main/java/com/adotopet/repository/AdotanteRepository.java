@@ -11,10 +11,9 @@ import java.util.UUID;
 
 @Repository
 public interface AdotanteRepository extends JpaRepository<AdotanteEntity, UUID> {
-
     boolean existsByCpf(String cpf);
-
+    boolean existsByEmail(String email);
     Optional<AdotanteEntity> findByCpf(String cpf);
-
     Page<AdotanteEntity> findByNomeContainingIgnoreCase(String nome, Pageable pageable);
+    Optional<AdotanteEntity> findByEmail(String email);
 }

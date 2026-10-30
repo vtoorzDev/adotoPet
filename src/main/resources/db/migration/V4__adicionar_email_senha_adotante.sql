@@ -1,0 +1,3 @@
+ALTER TABLE adotante
+    ADD COLUMN email VARCHAR(255) UNIQUE,
+    ADD COLUMN senha VARCHAR(255) ;
