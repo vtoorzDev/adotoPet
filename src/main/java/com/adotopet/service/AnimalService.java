@@ -7,10 +7,12 @@ import com.adotopet.entities.AnimalEntity;
 import com.adotopet.enums.StatusAnimalEnum;
 import com.adotopet.exceptions.AnimalException;
 import com.adotopet.repository.AnimalRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -36,6 +38,7 @@ public class AnimalService {
         return animalResponse;
     }
 
+    @Transactional
     public AnimalResponse registrarAnimal(AnimalRequest animalRequest) {
         boolean animalEncontrado = animalRepository.existsByNome(animalRequest.getNome());
 
@@ -59,27 +62,28 @@ public class AnimalService {
         return transformResponse(animalSalvo);
     }
 
-    public List<AnimalResponse> listarTodosAnimais() {
-        List<AnimalEntity> animalEntities = animalRepository.findAll();
+    public Page<AnimalResponse> listarTodosAnimais(Pageable pageable) {
+        Page<AnimalEntity> animalEntities = animalRepository.findAll(pageable);
 
         if (animalEntities.isEmpty()) {
             throw new AnimalException("Não tem nenhum animal cadastrado no sistema");
         }
 
-        return animalEntities.stream().map(this::transformResponse).toList();
+        return animalEntities.map(this::transformResponse);
         }
 
-    public List<AnimalResponse> buscarAnimal(String nome) {
-        List<AnimalEntity> animalEcontrado = animalRepository.findByNome(nome);
+    public Page<AnimalResponse> buscarAnimal(String nome, Pageable pageable) {
+        Page<AnimalEntity> animalEcontrado = animalRepository.findByNome(nome, pageable);
 
         if (animalEcontrado.isEmpty()) {
             throw new AnimalException("Nenhum animal encontrado com esse nome");
         }
 
-        return animalEcontrado.stream().map(this::transformResponse).toList();
+        return animalEcontrado.map(this::transformResponse);
     }
 
 
+    @Transactional
     public AnimalResponse atualizarAnimalParcial(AnimalPatchRequest animalPatchRequest, UUID id) {
         AnimalEntity animalEncontrado = animalRepository.findById(id)
                 .orElseThrow(() -> new AnimalException("Animal não encontrado no sistema"));
@@ -112,11 +116,10 @@ public class AnimalService {
             animalEncontrado.setPorteEnum(animalPatchRequest.getPorteEnum());
         }
 
-        AnimalEntity animalAtualizado = animalRepository.save(animalEncontrado);
-
-        return transformResponse(animalAtualizado);
+        return transformResponse(animalEncontrado);
     }
 
+    @Transactional
     public AnimalResponse atualizarAnimalCompleto(AnimalRequest animalRequest, UUID id) {
         AnimalEntity animalEncontrado = animalRepository.findById(id)
                 .orElseThrow(() -> new AnimalException("Animal não encontrado no sistema"));
@@ -129,11 +132,10 @@ public class AnimalService {
         animalEncontrado.setEspecieEnum(animalRequest.getEspecieEnum());
         animalEncontrado.setPorteEnum(animalRequest.getPorteEnum());
 
-        AnimalEntity animalAtualizado = animalRepository.save(animalEncontrado);
-
-        return transformResponse(animalAtualizado);
+        return transformResponse(animalEncontrado);
     }
 
+    @Transactional
     public void deletarAnimal(UUID id) {
         AnimalEntity animalEncontrado = animalRepository.findById(id)
                 .orElseThrow(() -> new AnimalException("Animal não encontrado"));

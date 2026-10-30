@@ -5,6 +5,9 @@ import com.adotopet.dtos.request.AnimalRequest;
 import com.adotopet.dtos.response.AnimalResponse;
 import com.adotopet.service.AnimalService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,13 +29,13 @@ public class AnimalController {
     }
 
     @GetMapping("/listar-todos")
-    public List<AnimalResponse> listarTodosAnimais() {
-        return animalService.listarTodosAnimais();
+    public Page<AnimalResponse> listarTodosAnimais(@PageableDefault(size = 10) Pageable pageable) {
+        return animalService.listarTodosAnimais(pageable);
     }
 
-    @GetMapping("/listar-animais")
-    public List<AnimalResponse> listarAnimaisNome(@RequestParam String nome) {
-        return animalService.buscarAnimal(nome);
+    @GetMapping("/listar-animais/{nome}")
+    public Page<AnimalResponse> listarAnimaisNome(@PathVariable String nome, @PageableDefault(size = 10) Pageable pageable) {
+        return animalService.buscarAnimal(nome, pageable);
     }
 
     @PatchMapping("/atualizar-animal/{id}")
